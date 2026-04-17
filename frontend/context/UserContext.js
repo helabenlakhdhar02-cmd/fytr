@@ -122,7 +122,10 @@ export function UserProvider({ children }) {
         // Set user data without triggering another update cycle
         setUserData(data);
       } else if (response) {
-        console.error('Failed to fetch user data');
+        // Only log error if it's not a 401 (unauthorized is expected when not logged in)
+        if (response.status !== 401) {
+          console.error('Failed to fetch user data:', response.status);
+        }
         setUserData(null);
         // If we get a 401 Unauthorized, clear cookies
         if (response.status === 401) {

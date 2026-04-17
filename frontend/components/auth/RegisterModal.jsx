@@ -182,7 +182,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
               <h3 className="text-center text-base font-medium text-gray-900 dark:text-white">Choose your role</h3>
 
               <div className="grid grid-cols-1 gap-2">
-                {['freelancer', 'client', 'formateur'].map((role) => (
+                {['freelancer', 'client', 'Trainer'].map((role) => (
                   <button
                     key={role}
                     type="button"
@@ -197,7 +197,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
                     <div className="text-xs text-gray-500 dark:text-gray-400">
                       {role === 'freelancer' && 'Find work and grow your career'}
                       {role === 'client' && 'Hire talent and get your projects done'}
-                      {role === 'formateur' && 'Share your knowledge and train others'}
+                      {role === 'Trainer' && 'Share your knowledge and train others'}
                     </div>
                   </button>
                 ))}

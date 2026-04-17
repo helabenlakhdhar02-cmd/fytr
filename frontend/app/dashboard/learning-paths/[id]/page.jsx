@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   FaRoute,
@@ -25,8 +25,8 @@ import Navbar from '../../../../components/Navbar';
 
 const LearningPathDetailsPage = ({ params }) => {
   const router = useRouter();
-  const resolvedParams = use(params);
-  const pathId = resolvedParams.id;
+  const pathname = usePathname();
+  const pathId = pathname.split('/')[3];
   const [learningPath, setLearningPath] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');

@@ -1,6 +1,6 @@
 'use client';
 
-import { FaHome, FaGraduationCap, FaLayerGroup } from 'react-icons/fa';
+import { FaHome, FaGraduationCap, FaLayerGroup, FaHistory } from 'react-icons/fa';
 import Link from 'next/link';
 
 export default function FreelancerNav({ userRank = 'Bronze' }) {
@@ -17,6 +17,10 @@ export default function FreelancerNav({ userRank = 'Bronze' }) {
 
         <Link href="/clabte-freelancer" className={linkStyle}>
           <FaLayerGroup className="text-primary-600" /> <span>Workspace</span>
+        </Link>
+
+        <Link href="/payment/history" className={linkStyle}>
+          <FaHistory className="text-primary-600" /> <span>Payments</span>
         </Link>
       </div>
 

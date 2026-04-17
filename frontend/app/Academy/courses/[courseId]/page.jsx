@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaClock, FaUsers, FaStar, FaGraduationCap, FaDownload, FaCheck, FaQuestion, FaArrowUp, FaArrowDown, FaRegComment, FaPlay } from 'react-icons/fa';
 import Navbar from '../../../../components/Navbar';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '../../../../context/AuthContext';
 import VideoPlaylist from '../../../../components/VideoPlaylist';
 
@@ -240,6 +241,8 @@ const coursesData = [
 
 const CourseDetailPage = ({ params }) => {
   const { openLoginModal } = useAuth();
+  const pathname = usePathname();
+  const courseId = pathname.split('/').pop();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -259,8 +262,7 @@ const CourseDetailPage = ({ params }) => {
       setLoading(true);
       // Simulate API call
       setTimeout(() => {
-        // Unwrap params using React.use()
-        const courseId = use(params).courseId;
+        // Extract courseId from pathname
         const foundCourse = coursesData.find(c => c.id === parseInt(courseId));
         if (foundCourse) {
           setCourse(foundCourse);

@@ -1,13 +1,25 @@
 "use client";
 import React, { memo } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { FaStar, FaDollarSign, FaCode, FaExternalLinkAlt, FaUser, FaUsers } from "react-icons/fa";
+import { FaStar, FaDollarSign, FaCode, FaExternalLinkAlt, FaUser, FaUsers, FaCreditCard } from "react-icons/fa";
 import Link from "next/link";
 
 // Define the component
 const ServiceCardComponent = ({ service, index }) => {
+  const router = useRouter();
+
   // Log rendering for debugging purposes
   console.log(`Rendering ServiceCard for ${service.title}`);
+
+  // Handle hire service (payment)
+  const handleHireService = () => {
+    const freelancerId = service.freelancer?.user?.id || service.freelancer?.id || 1;
+    
+    router.push(
+      `/payment?type=service&amount=${service.price}&receiver_id=${freelancerId}&service_id=${service.id}&title=${encodeURIComponent(service.title)}`
+    );
+  };
 
   return (
     <motion.div
@@ -135,11 +147,19 @@ const ServiceCardComponent = ({ service, index }) => {
           </div>
 
           <Link href={`/services/${service.id}`} passHref>
-            <button className="flex items-center gap-1 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors duration-300 text-sm font-medium">
+            <button className="flex items-center gap-1 px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-300 text-sm font-medium">
               <span>View</span>
               <FaExternalLinkAlt size={12} />
             </button>
           </Link>
+
+          <button
+            onClick={handleHireService}
+            className="flex items-center gap-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-300 text-sm font-medium"
+          >
+            <FaCreditCard size={12} />
+            <span>Hire</span>
+          </button>
         </div>
       </div>
     </motion.div>

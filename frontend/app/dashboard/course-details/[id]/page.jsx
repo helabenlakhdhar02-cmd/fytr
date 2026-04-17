@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import Navbar from '../../../../components/Navbar';
 import Link from 'next/link';
 import {
@@ -35,7 +35,8 @@ import SlackIntegration from '../../../../components/integrations/SlackIntegrati
 
 export default function CourseDetails({ params }) {
   const router = useRouter();
-  const courseId = use(params).id;
+  const pathname = usePathname();
+  const courseId = pathname.split('/')[3];
   const { userData: user, loading: userLoading } = useUser();
 
   const [course, setCourse] = useState(null);

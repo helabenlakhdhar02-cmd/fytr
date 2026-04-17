@@ -1,6 +1,6 @@
 'use client';
 
-import { FaHome, FaBookOpen, FaBook, FaCog, FaUser, FaSearch, FaGraduationCap, FaBriefcase, FaUsers, FaChartBar, FaChalkboardTeacher, FaNewspaper, FaFileAlt, FaLayerGroup, FaProjectDiagram, FaTools, FaMoneyBillWave, FaBell, FaUserPlus } from 'react-icons/fa';
+import { FaHome, FaBookOpen, FaBook, FaCog, FaUser, FaSearch, FaGraduationCap, FaBriefcase, FaUsers, FaChartBar, FaChalkboardTeacher, FaNewspaper, FaFileAlt, FaLayerGroup, FaProjectDiagram, FaTools, FaMoneyBillWave, FaBell, FaUserPlus, FaHistory } from 'react-icons/fa';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -10,6 +10,7 @@ export default function MobileNav({ user, role, logout, closeMenu, openLoginModa
     freelancer: [
       { href: '/academy', icon: <FaGraduationCap className="text-primary-600" />, label: 'Academy' },
       { href: '/clabte-freelancer', icon: <FaLayerGroup className="text-primary-600" />, label: 'Workspace' },
+      { href: '/payment/history', icon: <FaHistory className="text-primary-600" />, label: 'Payments' },
       { href: '/dashboard/home', icon: <FaHome className="text-primary-600" />, label: 'Home' },
       {
         href: '/dashboard/ranked',
@@ -22,6 +23,7 @@ export default function MobileNav({ user, role, logout, closeMenu, openLoginModa
     client: [
       { href: '/dashboard/home', icon: <FaHome className="text-primary-600" />, label: 'Home' },
       { href: '/fytrs', icon: <FaUsers className="text-primary-600" />, label: 'Fytrs' },
+      { href: '/payment/history', icon: <FaHistory className="text-primary-600" />, label: 'Payments' },
       { href: '/services-list', icon: <FaBriefcase className="text-primary-600" />, label: 'Services' },
       { href: '/clabte-client', icon: <FaLayerGroup className="text-primary-600" />, label: 'Projects' },
 

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import Navbar from '../../../components/Navbar';
 import Link from 'next/link';
 import {
@@ -24,7 +24,9 @@ import {
   FaList,
   FaInfoCircle,
   FaCalendarAlt,
-  FaSlack
+  FaSlack,
+  FaShoppingCart,
+  FaMoneyBillWave
 } from 'react-icons/fa';
 import DiscussionForum from '../../../components/course/DiscussionForum';
 import GoogleMeetIntegration from '../../../components/integrations/GoogleMeetIntegration';
@@ -32,12 +34,30 @@ import SlackIntegration from '../../../components/integrations/SlackIntegration'
 
 export default function CoursePreview({ params }) {
   const router = useRouter();
-  const courseId = use(params).id;
+  const pathname = usePathname();
+  const courseId = pathname.split('/').pop();
 
   const [course, setCourse] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeLesson, setActiveLesson] = useState(null);
   const [activeTab, setActiveTab] = useState('content'); // 'content', 'discussion', 'info', 'live-sessions', 'slack'
+
+  // Handle enrollment with payment
+  const handleEnroll = () => {
+    if (!course) return;
+
+    // If course is free, handle free enrollment
+    if (course.price <= 0) {
+      // TODO: Implement free enrollment logic
+      alert('Free course enrollment - direct enrollment logic would go here');
+      return;
+    }
+
+    // Navigate to payment form for paid courses
+    router.push(
+      `/payment?type=course&amount=${course.price}&receiver_id=${course.instructor.id}&course_id=${course.id}&title=${encodeURIComponent(course.title)}`
+    );
+  };
 
   // Mock data for demonstration
   const mockCourse = {
@@ -56,6 +76,7 @@ export default function CoursePreview({ params }) {
     category: "Web Development",
     tags: ["React", "Node.js", "MongoDB", "JavaScript", "HTML/CSS"],
     instructor: {
+      id: 12,
       name: "Ahmed Khalid",
       avatar: "/photos/users/instructor1.jpg",
       bio: "Senior Web Developer with 10+ years of experience"
@@ -538,8 +559,19 @@ export default function CoursePreview({ params }) {
                   </div>
                 </div>
 
-                <button className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-                  Enroll Now
+                <button
+                  onClick={handleEnroll}
+                  className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  {course.price > 0 ? (
+                    <>
+                      <FaShoppingCart /> Enroll for ${course.price}
+                    </>
+                  ) : (
+                    <>
+                      <FaCheck /> Enroll Now
+                    </>
+                  )}
                 </button>
               </div>
             </div>

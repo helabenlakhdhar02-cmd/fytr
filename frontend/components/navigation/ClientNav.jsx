@@ -1,6 +1,6 @@
 'use client';
 
-import { FaHome, FaUser, FaBriefcase, FaUsers, FaLayerGroup, FaThLarge, FaColumns } from 'react-icons/fa';
+import { FaHome, FaUser, FaBriefcase, FaUsers, FaLayerGroup, FaThLarge, FaColumns, FaHistory } from 'react-icons/fa';
 import { FiSun, FiMoon } from 'react-icons/fi';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -21,7 +21,7 @@ export default function ClientNav({ activeProjects = 0, pendingSubmissions = 0 }
     <div className="hidden md:flex items-center w-full">
       {/* Centered layout with theme toggle in the absolute center */}
       <div className="flex items-center justify-center w-full relative">
-        {/* Left Side Links - Exactly 2 items */}
+        {/* Left Side Links - Exactly 3 items */}
         <div className="flex items-center space-x-12 absolute left-0">
           <Link href="/dashboard/home" className={`${linkStyle} relative`}>
             <FaHome className={iconStyle} /> <span>Home</span>
@@ -34,6 +34,10 @@ export default function ClientNav({ activeProjects = 0, pendingSubmissions = 0 }
 
           <Link href="/fytrs" className={linkStyle}>
             <FaUsers className={iconStyle} /> <span>Fytrs</span>
+          </Link>
+
+          <Link href="/payment/history" className={linkStyle}>
+            <FaHistory className={iconStyle} /> <span>Payments</span>
           </Link>
         </div>
 

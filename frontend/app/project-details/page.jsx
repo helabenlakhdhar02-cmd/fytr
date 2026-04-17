@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaComments, FaClock, FaUsers, FaCheckCircle, FaFileAlt, FaMoneyBillWave, FaCalendarAlt, FaTasks, FaFileUpload, FaChartLine, FaEnvelope } from 'react-icons/fa';
 import Navbar from '../../components/Navbar';
@@ -396,6 +397,7 @@ Object.values(sampleProjectTypes).forEach(project => {
 const sampleProjectData = sampleProjectTypes.soloFinMultiple;
 
 const ProjectDetailsPage = () => {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [projectData, setProjectData] = useState(null);
   const [expandedFreelancerId, setExpandedFreelancerId] = useState(null);
@@ -491,6 +493,25 @@ const ProjectDetailsPage = () => {
       top: 0,
       behavior: 'smooth'
     });
+  };
+
+  // Handle payment button click
+  const handlePayFreelancer = () => {
+    if (!projectData || !getProjectTypeInfo().hasSelectedFreelancer) {
+      alert('Please select a freelancer first before making payment.');
+      return;
+    }
+
+    const selectedFreelancer = projectData.freelancers.find(f => f.isSelected);
+    if (!selectedFreelancer) {
+      alert('Unable to find selected freelancer.');
+      return;
+    }
+
+    // Navigate to payment form with project details
+    router.push(
+      `/payment?type=project&amount=${projectData.budget}&receiver_id=${selectedFreelancer.id}&project_id=${projectData.id}&title=${encodeURIComponent(projectData.title)}`
+    );
   };
 
   // Handle freelancer card expansion
@@ -661,6 +682,16 @@ const ProjectDetailsPage = () => {
                 </div>
 
                 <div className="flex space-x-2">
+                  {getProjectTypeInfo().hasSelectedFreelancer && (
+                    <button
+                      onClick={handlePayFreelancer}
+                      className="flex items-center bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-800/50 px-4 py-2 rounded-lg transition-colors duration-200 font-medium"
+                    >
+                      <FaMoneyBillWave className="mr-2" />
+                      <span>Pay Freelancer</span>
+                    </button>
+                  )}
+
                   <button
                     className="flex items-center bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 px-4 py-2 rounded-lg transition-colors duration-200"
                     onClick={() => setActiveTab('communication')}

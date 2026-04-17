@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   FaChartLine,
@@ -22,8 +22,8 @@ import Navbar from '../../../../../components/Navbar';
 
 const StudentAnalyticsPage = ({ params }) => {
   const router = useRouter();
-  const resolvedParams = use(params);
-  const studentId = resolvedParams.id;
+  const pathname = usePathname();
+  const studentId = pathname.split('/')[3];
   const [student, setStudent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');

@@ -218,3 +218,116 @@ class SoloFinRequest(models.Model):
 
     def __str__(self):
         return f"SoloFin: {self.freelancer.username} -> {self.project.title} ({self.status})"
+
+
+class Payment(models.Model):
+    PAYMENT_TYPE_CHOICES = [
+        ('project', 'Project Payment'),
+        ('service', 'Service Payment'),
+        ('course', 'Course Payment'),
+    ]
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded'),
+    ]
+
+    payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPE_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    # Who pays
+    payer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='payments_made'
+    )
+    # Who receives (freelancer or formateur)
+    receiver = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='payments_received'
+    )
+
+    # What is being paid for (optional links)
+    project = models.ForeignKey(
+        Project, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='payments'
+    )
+    service = models.ForeignKey(
+        Service, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='payments'
+    )
+
+    # Amounts
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    platform_fee = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
+    receiver_amount = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    # Optional transaction reference
+    transaction_ref = models.CharField(max_length=255, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.payment_type == 'course':
+            # 25% platform margin for courses
+            self.platform_fee = self.total_amount * 25 / 100
+        else:
+            # 15% commission for projects/services
+            self.platform_fee = self.total_amount * 15 / 100
+        self.receiver_amount = self.total_amount - self.platform_fee
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Payment #{self.id} - {self.payment_type} - {self.status}"
+
+
+class CourseEnrollment(models.Model):
+    """Tracks which freelancer enrolled in which course and if they paid"""
+    freelancer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='enrollments'
+    )
+    formateur = models.ForeignKey(
+        Formateur,
+        on_delete=models.CASCADE,
+        related_name='enrollments'
+    )
+    payment = models.OneToOneField(
+        Payment,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='enrollment'
+    )
+    course_title = models.CharField(max_length=255)
+    course_price = models.DecimalField(max_digits=10, decimal_places=2)
+    enrolled_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.freelancer.username} enrolled in {self.course_title}"
+
+class SkillPoint(models.Model):
+    """Tracks skill points earned by freelancers from BettaArena projects"""
+    freelancer = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='skill_points'
+    )
+    points = models.PositiveIntegerField(default=0)
+    free_courses_unlocked = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def add_point(self):
+        self.points += 1
+        # Every 5 points = 1 free course unlocked
+        if self.points % 5 == 0:
+            self.free_courses_unlocked += 1
+        self.save()
+
+    def __str__(self):
+        return f"{self.freelancer.username} - {self.points} points"    

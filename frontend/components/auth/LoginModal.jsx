@@ -193,26 +193,6 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }) {
           </motion.button>
         </form>
 
-        <div className="my-1 text-center text-gray-500 dark:text-gray-400 text-xs">Or</div>
-
-        <div className="space-y-2">
-          <motion.button
-            className="w-full flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 shadow-sm hover:shadow"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-          >
-            <FcGoogle className="text-lg" />
-            <span className="text-xs font-medium">Continue with Google</span>
-          </motion.button>
-          <motion.button
-            className="w-full flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 shadow-sm hover:shadow"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-          >
-            <FaFacebook className="text-blue-600 text-lg" />
-            <span className="text-xs font-medium">Continue with Facebook</span>
-          </motion.button>
-        </div>
 
         <div className="text-center mt-2">
           <p className="text-gray-600 dark:text-gray-400 text-xs mb-1">

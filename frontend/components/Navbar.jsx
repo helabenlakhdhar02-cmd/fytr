@@ -499,6 +499,13 @@ function NavbarComponent() {
                       </button>
                       <button
                         type="button"
+                        onClick={() => router.push("/payment/history")}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 bg-transparent border-none"
+                      >
+                        Payment History
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => router.push("/dashboard/main")}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 bg-transparent border-none"
                       >

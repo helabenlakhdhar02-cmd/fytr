@@ -1,13 +1,12 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import Navbar from "../../../components/Navbar";
-import { getPublicFreelancers } from "../../../lib/auth";
 import SearchHeader from "../../../components/SearchHeader";
 import CategorySection from "../../../components/CategorySection";
 import FreelancerCard from "../../../components/FreelancerCard";
 import TestimonialSection from "../../../components/TestimonialSection";
-import { mockFreelancers } from "../../../lib/mockData";
+import { freelancerService } from "../../../lib/dataService";
 
 const Page = () => {
   const [freelancers, setFreelancers] = useState([]);
@@ -15,37 +14,30 @@ const Page = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch freelancers from API
+  const fetchFreelancers = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await freelancerService.getAll();
+      const freelancersData = Array.isArray(data) ? data : (data.results || []);
+      setFreelancers(freelancersData);
+      setFilteredFreelancers(freelancersData);
+    } catch (err) {
+      console.error("Failed to fetch freelancers:", err);
+      setError("Failed to load freelancers. Please try again later.");
+      setFreelancers([]);
+      setFilteredFreelancers([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchFreelancers = async () => {
-      try {
-        setLoading(true);
-        let freelancersData;
-        try {
-          // Try to fetch from API first
-          freelancersData = await getPublicFreelancers();
-          if (!freelancersData || freelancersData.length === 0) {
-            // If API returns empty array, use mock data
-            freelancersData = mockFreelancers;
-          }
-        } catch (error) {
-          console.error("Failed to fetch freelancers from API, using mock data:", error);
-          // Use mock data if API fails
-          freelancersData = mockFreelancers;
-        }
-        setFreelancers(freelancersData);
-        setFilteredFreelancers(freelancersData);
-      } catch (error) {
-        console.error("Failed to fetch freelancers:", error);
-        // Fallback to mock data in case of any error
-        setFreelancers(mockFreelancers);
-        setFilteredFreelancers(mockFreelancers);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchFreelancers();
-  }, []);
+  }, [fetchFreelancers]);
 
   // Handle search and filtering
   const handleSearch = (term, view) => {
@@ -188,6 +180,16 @@ const Page = () => {
             {loading ? (
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+              </div>
+            ) : error ? (
+              <div className="text-center py-16 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-red-700 dark:text-red-400 mb-4">{error}</p>
+                <button
+                  onClick={fetchFreelancers}
+                  className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                >
+                  Try Again
+                </button>
               </div>
             ) : filteredFreelancers.length === 0 ? (
               <div className="text-center py-16">

@@ -1,76 +1,47 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   FaBell, FaCircle, FaCheckCircle, FaEnvelope, 
   FaProjectDiagram, FaMoneyBillWave, FaCalendarAlt, 
   FaExclamationCircle, FaEllipsisH, FaTimes
 } from 'react-icons/fa';
 import Link from 'next/link';
+import { notificationService } from '../../lib/dataService';
 
 const NotificationsDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
 
-  // Mock notifications data
-  const mockNotifications = [
-    {
-      id: 1,
-      type: 'message',
-      title: 'New message from TechCorp Solutions',
-      content: 'Hello! I wanted to discuss the React training schedule for our team.',
-      timestamp: '2023-11-25T10:30:00',
-      isRead: false,
-      link: '/dashboard/messages/1'
-    },
-    {
-      id: 2,
-      type: 'project',
-      title: 'New project request',
-      content: 'You have received a new project request for JavaScript training.',
-      timestamp: '2023-11-24T15:45:00',
-      isRead: false,
-      link: '/dashboard/active-projects'
-    },
-    {
-      id: 3,
-      type: 'review',
-      title: 'New review received',
-      content: 'Creative Designs Inc has left a 5-star review for your UI/UX workshop.',
-      timestamp: '2023-11-23T09:15:00',
-      isRead: true,
-      link: '/dashboard/trainer-profile'
-    },
-    {
-      id: 4,
-      type: 'service',
-      title: 'Service inquiry',
-      content: 'Someone is interested in your React.js Fundamentals Training service.',
-      timestamp: '2023-11-22T14:20:00',
-      isRead: true,
-      link: '/dashboard/services'
-    },
-    {
-      id: 5,
-      type: 'message',
-      title: 'New message from WebDev Academy',
-      content: 'Hi, just checking in on the JavaScript course materials. How are they coming along?',
-      timestamp: '2023-11-21T13:15:00',
-      isRead: true,
-      link: '/dashboard/messages/2'
+  // Fetch notifications from API
+  const fetchNotifications = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await notificationService.getAll();
+      const notificationsData = Array.isArray(data) ? data : (data.results || []);
+      setNotifications(notificationsData);
+      
+      // Calculate unread count
+      const unread = notificationsData.filter(notification => !notification.isRead).length;
+      setUnreadCount(unread);
+    } catch (err) {
+      console.error('Error fetching notifications:', err);
+      setError('Failed to load notifications');
+      setNotifications([]);
+      setUnreadCount(0);
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, []);
 
   useEffect(() => {
-    // In a real implementation, you would fetch notifications from the API
-    // For now, we'll use mock data
-    setNotifications(mockNotifications);
-    
-    // Calculate unread count
-    const unread = mockNotifications.filter(notification => !notification.isRead).length;
-    setUnreadCount(unread);
+    // Fetch notifications on mount
+    fetchNotifications();
     
     // Add click outside listener to close dropdown
     const handleClickOutside = (event) => {
@@ -83,37 +54,50 @@ const NotificationsDropdown = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [fetchNotifications]);
 
-  // Toggle dropdown
+  // Toggle dropdown and fetch if opening
   const toggleDropdown = () => {
+    if (!isOpen) {
+      fetchNotifications();
+    }
     setIsOpen(!isOpen);
   };
 
   // Mark notification as read
-  const markAsRead = (id) => {
-    setNotifications(prevNotifications => 
-      prevNotifications.map(notification => 
-        notification.id === id 
-          ? { ...notification, isRead: true } 
-          : notification
-      )
-    );
-    
-    // Recalculate unread count
-    const updatedNotifications = notifications.map(notification => 
-      notification.id === id ? { ...notification, isRead: true } : notification
-    );
-    const unread = updatedNotifications.filter(notification => !notification.isRead).length;
-    setUnreadCount(unread);
+  const markAsRead = async (id) => {
+    try {
+      await notificationService.markAsRead(id);
+      setNotifications(prevNotifications => 
+        prevNotifications.map(notification => 
+          notification.id === id 
+            ? { ...notification, isRead: true } 
+            : notification
+        )
+      );
+      
+      // Recalculate unread count
+      const updatedNotifications = notifications.map(notification => 
+        notification.id === id ? { ...notification, isRead: true } : notification
+      );
+      const unread = updatedNotifications.filter(notification => !notification.isRead).length;
+      setUnreadCount(unread);
+    } catch (err) {
+      console.error('Error marking notification as read:', err);
+    }
   };
 
   // Mark all as read
-  const markAllAsRead = () => {
-    setNotifications(prevNotifications => 
-      prevNotifications.map(notification => ({ ...notification, isRead: true }))
-    );
-    setUnreadCount(0);
+  const markAllAsRead = async () => {
+    try {
+      await notificationService.markAllAsRead();
+      setNotifications(prevNotifications => 
+        prevNotifications.map(notification => ({ ...notification, isRead: true }))
+      );
+      setUnreadCount(0);
+    } catch (err) {
+      console.error('Error marking all notifications as read:', err);
+    }
   };
 
   // Remove notification
@@ -197,7 +181,21 @@ const NotificationsDropdown = () => {
           
           {/* Notification List */}
           <div className="max-h-96 overflow-y-auto">
-            {notifications.length > 0 ? (
+            {error ? (
+              <div className="px-4 py-6 text-center">
+                <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
+                <button
+                  onClick={fetchNotifications}
+                  className="mt-2 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : loading ? (
+              <div className="px-4 py-6 text-center">
+                <div className="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-600"></div>
+              </div>
+            ) : notifications.length > 0 ? (
               <div>
                 {notifications.map((notification) => (
                   <Link

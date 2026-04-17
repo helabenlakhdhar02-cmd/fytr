@@ -1,8 +1,8 @@
 // api.js
 
 // Always use production base URL https://fytr-1.onrender.comhttp://127.0.0.1:8000/
-export const API_BASE_URL = 'https://fytr-1.onrender.com'; // Your production API
-
+//export const API_BASE_URL = 'https://fytr-1.onrender.com'; // Your production API
+ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 // API endpoints
 export const API_ENDPOINTS = {
   LOGIN: '/api/accounts/login/',
@@ -14,6 +14,11 @@ export const API_ENDPOINTS = {
   FREELANCER_PROJECTS: '/fyter/freelancer/projects/',
   POSTS: '/fyter/posts/',
   MESSAGES: '/fyter/messages-prv/',
+  ACADEMY: '/fyter/academy/',
+  NOTIFICATIONS: '/fyter/notifications/',
+  REVIEWS: '/fyter/reviews/',
+  PAYMENTS: '/fyter/payments/',
+  DASHBOARD: '/fyter/dashboard/',
 };
 
 // Function to create auth headers
@@ -30,4 +35,5 @@ export const createMultipartAuthHeaders = (token) => {
     'Authorization': `Bearer ${token}`
   };
 };
+
 

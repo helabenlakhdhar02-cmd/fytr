@@ -50,54 +50,6 @@ const ActiveProjects = () => {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data for projects
-  const mockProjects = [
-    {
-      id: 1,
-      title: 'Advanced React Training for Team',
-      client: {
-        name: 'TechCorp Solutions',
-        avatar: '/photos/Academy/client1.jpg'
-      },
-      status: 'in_progress',
-      deadline: '2023-12-15',
-      budget: 1200,
-      progress: 65,
-      description: 'Provide comprehensive React training for a team of 5 junior developers, focusing on hooks, context API, and performance optimization.',
-      lastUpdate: '2023-11-20'
-    },
-    {
-      id: 2,
-      title: 'JavaScript Fundamentals Course',
-      client: {
-        name: 'WebDev Academy',
-        avatar: '/photos/Academy/client2.jpg'
-      },
-      status: 'pending_review',
-      deadline: '2023-12-05',
-      budget: 800,
-      progress: 100,
-      description: 'Create and deliver a 4-week JavaScript fundamentals course for beginners, including exercises and assessments.',
-      lastUpdate: '2023-11-25'
-    },
-    {
-      id: 3,
-      title: 'UI/UX Design Workshop',
-      client: {
-        name: 'Creative Designs Inc',
-        avatar: '/photos/Academy/client3.jpg'
-      },
-      status: 'completed',
-      deadline: '2023-11-10',
-      budget: 950,
-      progress: 100,
-      description: 'Conduct a 2-day workshop on UI/UX design principles and practices for a team of graphic designers transitioning to web design.',
-      lastUpdate: '2023-11-12',
-      feedback: 'Excellent workshop! Our team learned a lot and is now applying these principles in their work.',
-      rating: 4.9
-    }
-  ];
-
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);

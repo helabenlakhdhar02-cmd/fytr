@@ -1,6 +1,6 @@
 "use client"
-import React, { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   FaStar, FaLayerGroup, FaRegNewspaper, FaEnvelope, FaPhone, FaMapMarkerAlt,
@@ -34,8 +34,8 @@ const FreelancerPublicProfile = ({ params }) => {
     }
   }, []);
   const [showContactInfo, setShowContactInfo] = useState(false);
-  // Unwrap params using React.use()
-  const freelancerId = use(params).id;
+  const pathname = usePathname();
+  const freelancerId = pathname.split('/').pop();
 
   useEffect(() => {
     const fetchFreelancerData = async () => {

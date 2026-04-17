@@ -1,4 +1,5 @@
 from django.urls import path, include
+from .views_payment import AddSkillPointView, CourseEnrollView, CreatePaymentView, MySkillPointsView, PaymentListView
 from rest_framework.routers import DefaultRouter
 from .views import (
     PosteView, LikedView, CreateCommentView, CertificationListCreateView, CertificationDetailView,
@@ -21,7 +22,7 @@ urlpatterns = [
     path('posts/<str:pk>/', PosteView.as_view(), name='post-retrieve-update-destroy'),
     path('like/<str:pk>/<int:id>/', LikedView.as_view(), name='like-retrieve-update-destroy'),
     path('comment/', CreateCommentView.as_view(), name='comment-list-create'),
-     path("certifications/", CertificationListCreateView.as_view(), name="certification-list-create"),
+    path("certifications/", CertificationListCreateView.as_view(), name="certification-list-create"),
     path("certifications/<int:pk>/", CertificationDetailView.as_view(), name="certification-detail"),
     path("profile/", UserProfileView.as_view(), name="user-profile"),
     path("client/project/", ProjectViewSet.as_view({'get': 'list', 'post': 'create'}), name="user-projects"),
@@ -34,6 +35,7 @@ urlpatterns = [
     path('freelancers/', FreelancerListView.as_view(), name='freelancer-list'),
     path('clients/', ClientUserListView.as_view(), name='clientuser-list'),
     path('user-profile/', ProfileDetailView.as_view(), name='profile-detail'),
+
 
     # Nouvelles URLs pour les candidatures aux projets
     path('', include(router.urls)),
@@ -49,4 +51,11 @@ urlpatterns = [
     path('chatroom/<int:chatroom_id>/ban-user/', ban_user_from_chatroom, name='ban-user-from-chatroom'),
     path('services/<int:service_id>/contact/', ContactServiceView.as_view(), name='contact_service'),
     path('usernames/', all_usernames, name='all_usernames'),
+
+    # URLs pour les paiements
+    path('payments/create/', CreatePaymentView.as_view(), name='create-payment'),
+    path('payments/my/', PaymentListView.as_view(), name='my-payments'),
+    path('payments/enroll-course/', CourseEnrollView.as_view(), name='enroll-course'),
+    path('payments/add-skill-point/', AddSkillPointView.as_view(), name='add-skill-point'),
+    path('payments/my-skill-points/', MySkillPointsView.as_view(), name='my-skill-points'),
 ]

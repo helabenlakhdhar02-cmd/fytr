@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { GroupCard } from '../../components/ui/GroupCard'
 import { PostCard } from '../../components/ui/Post'
@@ -12,74 +12,45 @@ import SignupPrompt from '../../components/ui/SignupPrompt'
 import React from 'react'
 import Navbar from '../../components/Navbar'
 import { motion } from 'framer-motion'
-import { samplePosts } from '../../lib/samplePosts'
 import { useAuth } from '../../context/AuthContext'
-import { API_BASE_URL } from '../../config/api';
+import { postService } from '../../lib/dataService'
 
 const page = () => {
     const [isUpdated, setIsUpdated] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const [posts, setPostes] = useState(null);
-    const [mockPosts, setMockPosts] = useState(samplePosts);
+    const [posts, setPosts] = useState([]);
+    const [error, setError] = useState(null);
     const router = useRouter();
     const { isAuthenticated } = useAuth();
 
-    // Fetch posts from API or use mock data
+    // Fetch posts from API
+    const fetchPosts = useCallback(async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const postsData = await postService.getAll();
+        setPosts(Array.isArray(postsData) ? postsData : []);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        setError("Failed to load posts. Please try again later.");
+        setPosts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, []);
+
+    // Fetch posts on mount
     useEffect(() => {
-      const fetchPosts = async () => {
-        setIsLoading(true);
-        try {
-          const response = await fetch(`${API_BASE_URL}/fyter/posts/`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          });
-
-          if (response.ok) {
-            const postsData = await response.json();
-            setPostes(postsData);
-          } else {
-            // If API fails, we'll rely on mock posts
-            console.error("Failed to fetch posts from API, using mock data");
-          }
-        } catch (error) {
-          console.error("An error occurred:", error);
-          // No need to show alert to users, just use mock data
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
       fetchPosts();
-    }, [router]);
+    }, [fetchPosts]);
 
     // Handle updates if needed
-   useEffect(() => {
-  if (isUpdated) {
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/fyter/posts/`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const postsData = await response.json();
-          setPostes(postsData);
-        }
-      } catch (error) {
-        console.error("An error occurred:", error);
-      } finally {
+    useEffect(() => {
+      if (isUpdated) {
+        fetchPosts();
         setIsUpdated(false);
       }
-    };
-
-    fetchPosts();
-  }
-}, [isUpdated]);
+    }, [isUpdated, fetchPosts]);
 
   
   return (
@@ -171,13 +142,21 @@ const page = () => {
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
             </div>
-          ) : (
+          ) : error ? (
+            // Error state
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
+              <p className="text-red-700 dark:text-red-400 mb-4">{error}</p>
+              <button
+                onClick={() => fetchPosts()}
+                className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : posts.length > 0 ? (
             <>
-              {/* Display mock posts first */}
-              
-
               {/* Display API posts */}
-              {posts && posts.map((post) => (
+              {posts.map((post) => (
                 <motion.div
                   key={post.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -185,10 +164,15 @@ const page = () => {
                   transition={{ duration: 0.5 }}
                   className="hover:shadow-xl transition-all duration-300 rounded-lg mb-6 transform hover:-translate-y-1"
                 >
-                  <PostCard key={post.id} post={post} setUpdated={setIsUpdated} isAuthenticated={isAuthenticated} />
+                  <PostCard post={post} setUpdated={setIsUpdated} isAuthenticated={isAuthenticated} />
                 </motion.div>
               ))}
             </>
+          ) : (
+            // No posts state
+            <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <p className="text-gray-600 dark:text-gray-400 text-lg">No posts yet. Be the first to share!</p>
+            </div>
           )}
         </div>
       </main>
