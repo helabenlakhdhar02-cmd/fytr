@@ -103,40 +103,13 @@ export default function Hero() {
               <span>Get Started</span>
               <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
             </button>
-
-            <button className="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 border-2 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-300">
-              <span className="w-8 h-8 bg-primary-600 text-white flex items-center justify-center rounded-full shadow-md">
-                <FaPlay className="ml-0.5" />
-              </span>
-              <span>Watch Demo</span>
-            </button>
           </motion.div>
 
           <motion.div
             className="mt-8 flex items-center justify-center md:justify-start gap-4"
             variants={itemVariants}
           >
-            <div className="flex -space-x-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="w-10 h-10 rounded-full border-2 border-white dark:border-gray-800 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center text-xs font-bold text-gray-800 dark:text-gray-200 overflow-hidden shadow-sm"
-                >
-                  <img
-                    src={`/photos/avatars/avatar-${i}.jpg`}
-                    alt="User"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = `https://ui-avatars.com/api/?name=User+${i}&background=0D8ABC&color=fff`;
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              <span className="font-semibold text-gray-900 dark:text-white">1,000+</span> freelancers joined this month
-            </p>
+            
           </motion.div>
         </motion.div>
 

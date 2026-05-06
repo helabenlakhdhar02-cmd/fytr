@@ -8,7 +8,7 @@ from .views import (
     PostuledRequestViewSet, SoloFinRequestViewSet,get_client_projects_by_username,
     GererPostesView, my_services, apply_to_bettaarena, apply_to_solofin,
     my_chatrooms, chatroom_messages,post_message, change_chatroom_phase, ban_user_from_chatroom,
-    ContactServiceView, all_usernames, ProfileDetailView
+    ContactServiceView, all_usernames, ProfileDetailView, StatsView
 )
 
 # Créer un routeur pour les viewsets
@@ -51,6 +51,7 @@ urlpatterns = [
     path('chatroom/<int:chatroom_id>/ban-user/', ban_user_from_chatroom, name='ban-user-from-chatroom'),
     path('services/<int:service_id>/contact/', ContactServiceView.as_view(), name='contact_service'),
     path('usernames/', all_usernames, name='all_usernames'),
+    path('stats/', StatsView.as_view(), name='stats'),
 
     # URLs pour les paiements
     path('payments/create/', CreatePaymentView.as_view(), name='create-payment'),

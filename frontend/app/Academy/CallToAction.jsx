@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import { FaArrowRight, FaGraduationCap, FaUsers, FaCertificate } from "react-icons/fa";
 
 const CallToAction = () => {
-  return (
-    <section className="py-16 px-6 md:px-16 bg-gray-50 dark:bg-gray-900 overflow-hidden relative">
-      {/* Background decorative elements */}
+  // TODO: Uncomment when we have Academy content ready
+  return null;
+};
+      /* Background decorative elements 
       <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary-100 dark:bg-primary-900/20 rounded-full filter blur-3xl opacity-70"></div>
       <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-secondary-100 dark:bg-secondary-900/20 rounded-full filter blur-3xl opacity-60"></div>
       
@@ -18,7 +19,7 @@ const CallToAction = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          {/* Background pattern */}
+          {/* Background pattern 
           <div className="absolute inset-0 opacity-10">
             <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
               <path d="M14 16H9v-2h5V9h2v5h5v2h-5v5h-2v-5zm14 14H23v-2h5v-5h2v5h5v2h-5v5h-2v-5zm11-23h2v2h-2v-2zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2z" fill="currentColor">
@@ -27,7 +28,7 @@ const CallToAction = () => {
           </div>
           
           <div className="grid md:grid-cols-2 gap-8 items-center">
-            {/* Left side - Content */}
+            {/* Left side - Content 
             <div className="text-white text-center md:text-left">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Start Your Learning Journey Today</h2>
               <p className="text-white/80 text-lg mb-6">
@@ -54,7 +55,7 @@ const CallToAction = () => {
               </div>
             </div>
             
-            {/* Right side - Stats */}
+            {/* Right side - Stats 
             <div className="grid grid-cols-2 gap-4">
               <motion.div
                 className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center"
@@ -123,4 +124,4 @@ const CallToAction = () => {
   );
 };
 
-export default CallToAction;
+export default CallToAction; */

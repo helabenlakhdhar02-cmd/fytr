@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaStar, FaQuoteLeft, FaChevronLeft, FaChevronRight, FaGraduationCap, FaArrowRight } from "react-icons/fa";
-
+/*
 const reviews = [
   {
     name: "Sarah Anderson",
@@ -49,11 +49,12 @@ const StudentsReview = () => {
     setActiveIndex((prev) => (prev === 0 ? reviews.length - 1 : prev - 1));
   };
 
-  return (
-    <section className="py-16 px-6 md:px-16 bg-white dark:bg-gray-800">
+  // TODO: Uncomment when we have real student reviews
+  return null;
+};
       <div className="container mx-auto">
         <div className="grid md:grid-cols-2 gap-10 items-center">
-          {/* Left side - Content */}
+          {/* Left side - Content 
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -70,7 +71,7 @@ const StudentsReview = () => {
               Hear from our students who have transformed their careers through our courses. Their success is our greatest achievement!
             </p>
 
-            {/* Indicator dots */}
+            {/* Indicator dots *
             <div className="flex space-x-2 mt-8">
               {reviews.map((_, i) => (
                 <button
@@ -82,7 +83,7 @@ const StudentsReview = () => {
               ))}
             </div>
 
-            {/* Navigation buttons */}
+            {/* Navigation buttons *
             <div className="flex space-x-4 mt-6">
               <motion.button
                 onClick={prevSlide}
@@ -103,7 +104,7 @@ const StudentsReview = () => {
               </motion.button>
             </div>
 
-            {/* CTA Button */}
+            {/* CTA Button *
             <motion.button
               className="mt-8 bg-primary-600 hover:bg-primary-700 text-white transition-all duration-300 px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg hover:shadow-primary-500/30 group"
               whileHover={{ scale: 1.05 }}
@@ -114,7 +115,7 @@ const StudentsReview = () => {
             </motion.button>
           </motion.div>
 
-          {/* Right side - Review Slider */}
+          {/* Right side - Review Slider *
           <div className="relative h-[400px] flex items-center justify-center">
             <AnimatePresence mode="wait">
               <motion.div
@@ -158,7 +159,7 @@ const StudentsReview = () => {
                   </div>
                 </div>
 
-                {/* Course badge */}
+                {/* Course badge *
                 <div className="absolute top-4 right-4 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs px-3 py-1 rounded-full flex items-center gap-1">
                   <FaGraduationCap size={12} />
                   <span>{reviews[activeIndex].course}</span>
@@ -166,7 +167,7 @@ const StudentsReview = () => {
               </motion.div>
             </AnimatePresence>
 
-            {/* Decorative elements */}
+            {/* Decorative elements *
             <div className="absolute -z-10 w-full h-full">
               <div className="absolute top-10 right-10 w-20 h-20 bg-primary-100 dark:bg-primary-900/20 rounded-full filter blur-xl opacity-70"></div>
               <div className="absolute bottom-10 left-10 w-32 h-32 bg-secondary-100 dark:bg-secondary-900/20 rounded-full filter blur-xl opacity-60"></div>
@@ -178,4 +179,4 @@ const StudentsReview = () => {
   );
 };
 
-export default StudentsReview;
+export default StudentsReview;*/

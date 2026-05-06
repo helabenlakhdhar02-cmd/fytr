@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { FaUser, FaUserTie, FaChalkboardTeacher } from "react-icons/fa";
+import { getStats } from "../lib/auth";
 
 // Animated counter component
 const AnimatedCounter = ({ value, duration = 2000 }) => {
@@ -31,26 +32,48 @@ const AnimatedCounter = ({ value, duration = 2000 }) => {
 };
 
 export default function StatsSection() {
-  const stats = [
-    {
-      count: "1000",
-      label: "Users",
-      icon: <FaUser size={24} />,
-      color: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-    },
-    {
-      count: "300",
-      label: "Freelancers",
-      icon: <FaUserTie size={24} />,
-      color: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
-    },
-    {
-      count: "50",
-      label: "Trainers",
-      icon: <FaChalkboardTeacher size={24} />,
-      color: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
-    },
-  ];
+  const [stats, setStats] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const data = await getStats();
+      const formattedStats = [
+        {
+          count: data.users.toString(),
+          label: "Users",
+          icon: <FaUser size={24} />,
+          color: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+        },
+        {
+          count: data.freelancers.toString(),
+          label: "Freelancers",
+          icon: <FaUserTie size={24} />,
+          color: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+        },
+        {
+          count: data.trainers.toString(),
+          label: "Trainers",
+          icon: <FaChalkboardTeacher size={24} />,
+          color: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
+        },
+      ];
+      setStats(formattedStats);
+      setLoading(false);
+    };
+
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="bg-gray-100 dark:bg-gray-900 py-4">
+        <div className="flex flex-col md:flex-row justify-around items-center gap-4 md:gap-0 w-auto text-center max-w-3xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transform -mt-10 relative z-10">
+          <p className="text-gray-600 dark:text-gray-400">Loading stats...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-gray-100 dark:bg-gray-900 py-4">
