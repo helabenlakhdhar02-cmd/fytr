@@ -6,32 +6,34 @@ import { useAuth } from '../context/AuthContext';
 
 export default function UserReviews() {
   const { openRegisterModal } = useAuth();
-  const reviews = [
-    {
-      text: "FytrLance gave me my first real freelancing opportunity. The mission-based system helped me build my portfolio quickly and the community support was incredible!",
-      user: "Viezh Robert",
-      role: "Web Developer",
-      location: "Warsaw, Poland",
-      rating: 4.5,
-      image: "/images/user1.jpg",
-    },
-    {
-      text: "An amazing platform to connect with clients and grow as a freelancer! The skill verification process helped me stand out and secure high-paying projects.",
-      user: "Sarah Johnson",
-      role: "UI/UX Designer",
-      location: "Berlin, Germany",
-      rating: 5,
-      image: "/images/user2.jpg",
-    },
-    {
-      text: "As a client, I found exceptional talent for my startup through FytrLance. The AI matching system connected me with freelancers who perfectly fit my project requirements.",
-      user: "Michael Chen",
-      role: "Startup Founder",
-      location: "Toronto, Canada",
-      rating: 4.8,
-      image: "/images/user3.jpg",
-    },
-  ];
+  // TODO: Uncomment when we have real user reviews
+  // const reviews = [
+  //   {
+  //     text: "FytrLance gave me my first real freelancing opportunity. The mission-based system helped me build my portfolio quickly and the community support was incredible!",
+  //     user: "Viezh Robert",
+  //     role: "Web Developer",
+  //     location: "Warsaw, Poland",
+  //     rating: 4.5,
+  //     image: "/images/user1.jpg",
+  //   },
+  //   {
+  //     text: "An amazing platform to connect with clients and grow as a freelancer! The skill verification process helped me stand out and secure high-paying projects.",
+  //     user: "Sarah Johnson",
+  //     role: "UI/UX Designer",
+  //     location: "Berlin, Germany",
+  //     rating: 5,
+  //     image: "/images/user2.jpg",
+  //   },
+  //   {
+  //     text: "As a client, I found exceptional talent for my startup through FytrLance. The AI matching system connected me with freelancers who perfectly fit my project requirements.",
+  //     user: "Michael Chen",
+  //     role: "Startup Founder",
+  //     location: "Toronto, Canada",
+  //     rating: 4.8,
+  //     image: "/images/user3.jpg",
+  //   },
+  // ];
+  const reviews = [];
 
   const [index, setIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -60,7 +62,28 @@ export default function UserReviews() {
   return (
     <section className="py-16 px-6 md:px-16 bg-white dark:bg-gray-900">
       <div className="container mx-auto">
-        <div className="grid md:grid-cols-2 gap-10 items-center">
+        {/* 
+        TODO: Uncomment this section when we have real user reviews
+        
+        {reviews.length === 0 ? (
+          // Placeholder when no reviews
+          <div className="text-center py-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              What Our Users Say
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 text-lg mb-6">
+              Real testimonials coming soon as our community grows!
+            </p>
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-12 max-w-xl mx-auto">
+              <p className="text-gray-500 dark:text-gray-400">Be part of our community and share your FytrLance success story!</p>
+            </div>
+          </div>
+        ) : (
+          // Original reviews slider
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+        */}
+        {false && (
+          <div className="grid md:grid-cols-2 gap-10 items-center">
           {/* Left side - Content */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -173,6 +196,7 @@ export default function UserReviews() {
             </div>
           </div>
         </div>
+        )}
 
         {/* CTA Section */}
         <motion.div

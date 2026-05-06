@@ -799,6 +799,29 @@ class ProfileDetailView(APIView):
             serializer = CustomUserSerializer(user)
         return Response(serializer.data)
 
+
+class StatsView(APIView):
+    """
+    Get platform statistics - user counts by role
+    """
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        try:
+            total_users = CustomUser.objects.count()
+            freelancer_count = CustomUser.objects.filter(role='freelancer').count()
+            trainer_count = CustomUser.objects.filter(role='formateur').count()
+            
+            stats = {
+                'users': total_users,
+                'freelancers': freelancer_count,
+                'trainers': trainer_count
+            }
+            
+            return Response(stats, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
     def put(self, request):
         user = request.user
         data = request.data

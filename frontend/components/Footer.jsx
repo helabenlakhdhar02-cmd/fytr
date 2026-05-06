@@ -98,10 +98,7 @@ const Footer = () => {
               <FaPhone className="text-primary-600 dark:text-primary-500 mr-2" />
               <a href="tel:+216 52 179 854" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">+216 52 179 854</a>
             </div>
-            <div className="flex items-center bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-              <FaMapMarkerAlt className="text-primary-600 dark:text-primary-500 mr-2" />
-              <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">not yet</span>
-            </div>
+            
           </div>
         </div>
 

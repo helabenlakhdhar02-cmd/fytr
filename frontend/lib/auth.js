@@ -200,3 +200,17 @@ export const getPublicFreelancers = async () => {
         return [];  // fallback in case of error
     }
 };
+
+export const getStats = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/fyter/stats/`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching stats:", error);
+        return {
+            users: 0,
+            freelancers: 0,
+            trainers: 0
+        };
+    }
+};
