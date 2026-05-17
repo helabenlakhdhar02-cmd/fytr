@@ -15,10 +15,6 @@ export default function GuestNav() {
           <FaHome className="text-primary-600" /> <span>Home</span>
         </Link>
 
-        <Link href="/Academy" className={linkStyle}>
-          <FaGraduationCap className="text-primary-600" /> <span>Academy</span>
-        </Link>
-
         <Link href="/services-list" className={linkStyle}>
           <FaBriefcase className="text-primary-600" /> <span>Services</span>
         </Link>

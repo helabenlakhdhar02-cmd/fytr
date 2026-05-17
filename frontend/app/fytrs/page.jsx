@@ -299,7 +299,7 @@ const FytrsPage = () => {
                 />
 
                 {/* Success Stories */}
-                {!showFavorites && <SuccessStories />}
+                {!showFavorites && <div className="hidden"><SuccessStories /></div>}
               </>
             ) : (
               <FytrsEmptyState onReset={() => setFilters({

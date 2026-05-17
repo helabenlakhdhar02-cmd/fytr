@@ -1,35 +1,43 @@
 "use client";
-import React from 'react'
-import { refreshAccessToken, logoutUser } from '../../lib/auth';
-import { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
-import { GroupCard } from '../ui/GroupCard';
-import { PostCard } from '../ui/Post';
-import ProfileCard from '../ui/ProfileCrad';
-import StatusBox from '../ui/Status';
 import Navbar from '../Navbar';
-import PostFeed from '../Posts/PostFeed';
 import Link from 'next/link';
-import { FaChalkboardTeacher, FaUsers, FaBook, FaStar, FaGraduationCap, FaChartLine, FaPlus, FaCalendarAlt } from 'react-icons/fa';
-import { API_BASE_URL } from '../../config/api';
+import { FaChalkboardTeacher, FaUsers, FaBook, FaStar, FaPlus, FaSearch, FaChartLine, FaCalendarAlt, FaGraduationCap } from 'react-icons/fa';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title } from 'chart.js';
+import { Pie, Line, Bar } from 'react-chartjs-2';
 
-const FormateurDashboard = ({user}) => {
+// Register ChartJS components
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title
+);
+
+const FormateurDashboard = ({ user }) => {
   const router = useRouter();
-  const [courses, setCourses] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [isUpdated, setIsUpdated] = useState(false);
-  const [students, setStudents] = useState([]);
+  const [activeTab, setActiveTab] = useState('courses');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  // Mock data for demonstration
-  const mockCourses = [
+  // Mock courses data
+  const courses = [
     {
       id: 1,
       title: "Full-Stack Web Development",
       students: 124,
       rating: 4.8,
       progress: 100,
-      status: "active"
+      status: "active",
+      price: 49.99,
+      duration: '40 hours',
+      revenue: 6076
     },
     {
       id: 2,
@@ -37,7 +45,10 @@ const FormateurDashboard = ({user}) => {
       students: 87,
       rating: 4.9,
       progress: 100,
-      status: "active"
+      status: "active",
+      price: 59.99,
+      duration: '35 hours',
+      revenue: 5219.13
     },
     {
       id: 3,
@@ -45,396 +56,329 @@ const FormateurDashboard = ({user}) => {
       students: 56,
       rating: 4.7,
       progress: 80,
-      status: "draft"
+      status: "draft",
+      price: 69.99,
+      duration: '50 hours',
+      revenue: 0
     }
   ];
 
-  const mockStudents = [
-    { id: 1, name: "Sarah Williams", avatar: "/photos/Academy/student2.jpeg", course: "Full-Stack Web Development", progress: 75 },
-    { id: 2, name: "Michael Chen", avatar: "/photos/Academy/student3.png", course: "UI/UX Design Masterclass", progress: 92 },
-    { id: 3, name: "John Anderson", avatar: "/photos/Academy/student1.jpg", course: "Full-Stack Web Development", progress: 45 }
+  const recentStudents = [
+    { id: 1, name: "Sarah Williams", course: "Full-Stack Web Development", progress: 75, email: "sarah@example.com" },
+    { id: 2, name: "Michael Chen", course: "UI/UX Design Masterclass", progress: 92, email: "michael@example.com" },
+    { id: 3, name: "John Anderson", course: "Full-Stack Web Development", progress: 45, email: "john@example.com" },
+    { id: 4, name: "Emma Davis", course: "Python for Data Science", progress: 60, email: "emma@example.com" }
   ];
 
-  useEffect(() => {
-    // Set mock data
-    setCourses(mockCourses);
-    setStudents(mockStudents);
-
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/fyter/posts/`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setPosts(data);
-        } else {
-          console.error('Failed to fetch posts');
-        }
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      }
+  // Generate chart data
+  const generateChartData = () => {
+    const statusData = {
+      labels: ['Active', 'Draft'],
+      datasets: [{
+        data: [
+          courses.filter(c => c.status === 'active').length,
+          courses.filter(c => c.status === 'draft').length,
+        ],
+        backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(255, 206, 86, 0.7)'],
+        borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 206, 86, 1)'],
+        borderWidth: 1,
+      }],
     };
 
-    fetchPosts();
-  }, [isUpdated]);
+    const monthlyData = {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+        label: 'New Enrollments',
+        data: [12, 19, 15, 25, 22, 18],
+        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        tension: 0.4,
+      }],
+    };
 
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-      Cookies.remove('access_token');
-      Cookies.remove('refresh_token');
-      router.push('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
+    const revenueData = {
+      labels: courses.map(c => c.title.substring(0, 12) + '...'),
+      datasets: [{
+        label: 'Revenue ($)',
+        data: courses.map(c => c.revenue),
+        backgroundColor: 'rgba(153, 102, 255, 0.7)',
+        borderColor: 'rgba(153, 102, 255, 1)',
+        borderWidth: 1,
+      }],
+    };
+
+    return { statusData, monthlyData, revenueData };
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: 'gray', font: { size: 12 } }
+      }
     }
   };
 
-  // Calculate total stats
-  const totalStudents = courses.reduce((sum, course) => sum + course.students, 0);
-  const totalCourses = courses.length;
-  const averageRating = courses.length > 0
-    ? (courses.reduce((sum, course) => sum + course.rating, 0) / courses.length).toFixed(1)
-    : "0.0";
+  const stats = {
+    totalCourses: courses.length,
+    totalStudents: courses.reduce((sum, c) => sum + c.students, 0),
+    totalRevenue: courses.reduce((sum, c) => sum + c.revenue, 0),
+    avgRating: (courses.reduce((sum, c) => sum + c.rating, 0) / courses.length).toFixed(1)
+  };
+
+  const filteredCourses = courses.filter(course => {
+    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' && course.status === 'active') || (statusFilter === 'draft' && course.status === 'draft');
+    return matchesSearch && matchesStatus;
+  });
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
-      <div className="py-6">
-        {/* Welcome Banner */}
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="dashboard-section bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-700 dark:to-blue-900 mb-6 p-6 text-white rounded-xl relative overflow-hidden">
-            {/* Background decoration */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-20 -mt-20"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-white opacity-5 rounded-full -ml-10 -mb-10"></div>
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Trainer Dashboard
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Manage your courses and students
+            </p>
+          </div>
+          <div className="mt-4 md:mt-0">
+            <Link
+              href="/dashboard/add-course"
+              className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
+            >
+              <FaPlus className="mr-2" size={14} />
+              Create Course
+            </Link>
+          </div>
+        </div>
 
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between relative z-10">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+            <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold mb-2">Welcome back, Formateur!</h1>
-                <p className="text-blue-100">Your teaching dashboard is ready. Create courses, manage students, and grow your teaching career.</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-200 text-blue-800">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
-                    Teaching Expert
-                  </span>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-200 text-purple-800">
-                    <span className="w-2 h-2 bg-purple-500 rounded-full mr-1"></span>
-                    Course Creator
-                  </span>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-200 text-green-800">
-                    <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-                    Student Mentor
-                  </span>
-                </div>
+                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Courses</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalCourses}</p>
               </div>
-              <div className="mt-4 md:mt-0 flex space-x-3">
-                <Link href="/dashboard/add-course" className="bg-white text-blue-700 hover:bg-blue-50 px-4 py-2 rounded-md font-medium transition-all shadow-md hover:shadow-lg flex items-center">
-                  <FaPlus className="h-4 w-4 mr-2" />
-                  Create Course
-                </Link>
-                <Link href="/dashboard/students" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-all shadow-md hover:shadow-lg border border-blue-400">
-                  View Students
-                </Link>
+              <FaBook className="text-blue-500 text-3xl opacity-20" />
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-green-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Students</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalStudents}</p>
               </div>
+              <FaUsers className="text-green-500 text-3xl opacity-20" />
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-purple-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Revenue</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">${stats.totalRevenue.toFixed(2)}</p>
+              </div>
+              <FaChartLine className="text-purple-500 text-3xl opacity-20" />
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Avg Rating</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.avgRating}⭐</p>
+              </div>
+              <FaStar className="text-yellow-500 text-3xl opacity-20" />
             </div>
           </div>
         </div>
 
-        {/* Dashboard Grid */}
-        <div className='relative w-full max-w-7xl mx-auto grid grid-cols-12 gap-6 h-auto p-4 md:p-6'>
-          {/* Left Sidebar */}
-          <div className='relative col-span-4 lg:col-span-3 space-y-5'>
-            <aside className='sticky top-4 space-y-5'>
-              <div className="card-hover-effect">
-                <ProfileCard />
-              </div>
-              <div className="card-hover-effect">
-                <GroupCard />
-              </div>
-
-              {/* Teaching Stats Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80">
-                  <h3 className="font-bold text-gray-900 dark:text-gray-100 flex items-center">
-                    <FaChartLine className="h-5 w-5 mr-2 text-blue-600 dark:text-blue-400" />
-                    Teaching Stats
-                  </h3>
-                </div>
-                <div className="p-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-center border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:border-blue-200 dark:hover:border-blue-800/50 group">
-                      <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-300">{totalStudents}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Students</p>
-                    </div>
-                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-center border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:border-green-200 dark:hover:border-green-800/50 group">
-                      <p className="text-2xl font-bold text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform duration-300">{totalCourses}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Courses</p>
-                    </div>
-                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-center border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:border-purple-200 dark:hover:border-purple-800/50 group">
-                      <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform duration-300">0</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Reviews</p>
-                    </div>
-                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-center border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:border-yellow-200 dark:hover:border-yellow-800/50 group">
-                      <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 group-hover:scale-110 transition-transform duration-300 flex items-center justify-center">
-                        {averageRating} <FaStar className="h-3 w-3 ml-1" />
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Rating</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </aside>
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Course Status</h3>
+            <div style={{ position: 'relative', height: '300px' }}>
+              <Pie data={generateChartData().statusData} options={chartOptions} />
+            </div>
           </div>
 
-          {/* Main Content */}
-          <main className='col-span-8 md:col-span-5 lg:col-span-6 space-y-6'>
-            {/* Quick Stats */}
-            <div className="dashboard-section bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg text-center smooth-transition hover:shadow-md">
-                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{totalCourses}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Active Courses</p>
-                </div>
-                <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg text-center smooth-transition hover:shadow-md">
-                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">{totalStudents}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Students</p>
-                </div>
-                <div className="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg text-center smooth-transition hover:shadow-md">
-                  <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">0</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Messages</p>
-                </div>
-                <div className="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg text-center smooth-transition hover:shadow-md">
-                  <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{averageRating}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Avg. Rating</p>
-                </div>
-              </div>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Monthly Enrollments</h3>
+            <div style={{ position: 'relative', height: '300px' }}>
+              <Line data={generateChartData().monthlyData} options={chartOptions} />
             </div>
+          </div>
+        </div>
 
-            {/* Upcoming Teaching Sessions */}
-            <div className="dashboard-section bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-gray-900 dark:text-white flex items-center">
-                  <FaChalkboardTeacher className="h-5 w-5 mr-2 text-blue-600 dark:text-blue-400" />
-                  Upcoming Teaching Sessions
-                </h3>
-                <Link href="/dashboard/schedule" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium flex items-center">
-                  <span>View Schedule</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </div>
+        {/* Revenue Chart */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Revenue by Course</h3>
+          <div style={{ position: 'relative', height: '300px' }}>
+            <Bar data={generateChartData().revenueData} options={chartOptions} />
+          </div>
+        </div>
 
-              <div className="space-y-3">
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800/30">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">Full-Stack Web Development</h4>
-                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400">Today, 2:00 PM</span>
+        {/* Tabs */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+          <div className="flex border-b border-gray-200 dark:border-gray-700">
+            <button
+              onClick={() => setActiveTab('courses')}
+              className={`px-6 py-4 font-medium transition-colors ${
+                activeTab === 'courses'
+                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
+                  : 'text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              <FaBook className="inline mr-2" size={16} />
+              My Courses ({courses.length})
+            </button>
+
+            <button
+              onClick={() => setActiveTab('students')}
+              className={`px-6 py-4 font-medium transition-colors ${
+                activeTab === 'students'
+                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
+                  : 'text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              <FaUsers className="inline mr-2" size={16} />
+              Recent Students
+            </button>
+          </div>
+
+          <div className="p-6">
+            {/* Courses Tab */}
+            {activeTab === 'courses' && (
+              <div>
+                <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
+                  <div className="flex-1 relative">
+                    <FaSearch className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <input
+                      type="text"
+                      placeholder="Search courses..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
                   </div>
-                  <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                    <span className="flex items-center mr-3">
-                      <FaUsers className="h-3 w-3 mr-1" />
-                      24 students
-                    </span>
-                    <span>Module 3: JavaScript Fundamentals</span>
-                  </div>
+
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="draft">Draft</option>
+                  </select>
                 </div>
 
-                <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800/30">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">UI/UX Design Masterclass</h4>
-                    <span className="text-xs font-medium text-purple-600 dark:text-purple-400">Tomorrow, 10:00 AM</span>
-                  </div>
-                  <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                    <span className="flex items-center mr-3">
-                      <FaUsers className="h-3 w-3 mr-1" />
-                      18 students
-                    </span>
-                    <span>Module 2: User Research Methods</span>
-                  </div>
-                </div>
+                <div className="space-y-4">
+                  {filteredCourses.length > 0 ? (
+                    filteredCourses.map((course) => (
+                      <div key={course.id} className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-6">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                          <div className="mb-4 md:mb-0">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                {course.title}
+                              </h4>
+                              <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                course.status === 'active'
+                                  ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                              }`}>
+                                {course.status === 'active' ? 'Active' : 'Draft'}
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+                              <span className="flex items-center gap-1">
+                                <FaUsers size={14} /> {course.students} students
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <FaStar className="text-yellow-400" size={14} /> {course.rating} rating
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <FaCalendarAlt size={14} /> {course.duration}
+                              </span>
+                            </div>
+                          </div>
 
-                <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800/30">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">Python for Data Science</h4>
-                    <span className="text-xs font-medium text-green-600 dark:text-green-400">Friday, 3:30 PM</span>
-                  </div>
-                  <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                    <span className="flex items-center mr-3">
-                      <FaUsers className="h-3 w-3 mr-1" />
-                      12 students
-                    </span>
-                    <span>Module 1: Introduction to NumPy</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Recent Students */}
-            <div className="dashboard-section bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-gray-900 dark:text-white flex items-center">
-                  <FaUsers className="h-5 w-5 mr-2 text-blue-600 dark:text-blue-400" />
-                  Recent Students
-                </h3>
-                <Link href="/dashboard/students" className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium">
-                  View All
-                </Link>
-              </div>
-
-              {students.length > 0 ? (
-                <div className="space-y-3">
-                  {students.map(student => (
-                    <div key={student.id} className="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                      <img
-                        src={student.avatar}
-                        alt={student.name}
-                        className="w-10 h-10 rounded-full object-cover mr-3"
-                      />
-                      <div className="flex-1">
-                        <h4 className="text-sm font-medium text-gray-900 dark:text-white">{student.name}</h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{student.course}</p>
-                      </div>
-                      <div className="w-24">
-                        <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                          <div
-                            className="bg-green-500 h-2 rounded-full"
-                            style={{ width: `${student.progress}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 text-right mt-1">{student.progress}%</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400 text-sm py-4 text-center">No students enrolled yet.</p>
-              )}
-            </div>
-
-            {/* Status Box for Posts */}
-            <StatusBox setUpdated={setIsUpdated} />
-
-            {/* Posts Feed */}
-            <PostFeed userRole="formateur" />
-          </main>
-
-          {/* Right Sidebar */}
-          <div className='hidden md:block md:col-span-3'>
-            <aside className='sticky top-4 space-y-6'>
-              {/* Your Courses */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-gray-900 dark:text-gray-100 flex items-center">
-                      <FaBook className="h-5 w-5 mr-2 text-blue-600 dark:text-blue-400" />
-                      Your Courses
-                    </h3>
-                    <Link href="/dashboard/my-courses" className="text-blue-600 dark:text-blue-400 text-sm hover:text-blue-700 dark:hover:text-blue-300 transition-colors font-medium">
-                      View All
-                    </Link>
-                  </div>
-                </div>
-                <div className="p-4">
-                  {courses && courses.length > 0 ? (
-                    <ul className="space-y-3">
-                      {courses.map(course => (
-                        <li key={course.id} className="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
-                          <div className="flex justify-between items-center">
-                            <Link href={`/courses/${course.id}`} className="font-medium text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors block">
-                              {course.title}
+                          <div className="flex items-center gap-4">
+                            <div className="text-right">
+                              <p className="text-sm text-gray-600 dark:text-gray-400">Revenue</p>
+                              <p className="text-lg font-bold text-gray-900 dark:text-white">${course.revenue.toFixed(2)}</p>
+                            </div>
+                            <Link
+                              href={`/dashboard/course/${course.id}`}
+                              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
+                            >
+                              Manage
                             </Link>
-                            <span className={`text-xs px-2 py-1 rounded-full ${
-                              course.status === 'active'
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400'
-                            }`}>
-                              {course.status === 'active' ? 'Active' : 'Draft'}
-                            </span>
                           </div>
-                          <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
-                            <div className="flex items-center mr-3">
-                              <FaUsers className="h-3 w-3 mr-1" />
-                              {course.students} students
-                            </div>
-                            <div className="flex items-center">
-                              <FaStar className="h-3 w-3 mr-1 text-yellow-500" />
-                              {course.rating}
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="text-center py-6">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 mb-3">
-                        <FaGraduationCap className="h-6 w-6" />
+                        </div>
                       </div>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">No courses yet</p>
-                      <Link href="/dashboard/add-course" className="text-blue-600 dark:text-blue-400 text-sm font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
-                        Create your first course
-                      </Link>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500 dark:text-gray-400">No courses found</p>
                     </div>
                   )}
                 </div>
               </div>
+            )}
 
-              {/* Quick Actions */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80">
-                  <h3 className="font-bold text-gray-900 dark:text-gray-100">Trainer Quick Actions</h3>
-                </div>
-                <div className="p-4">
-                  <div className="space-y-2">
-                    <Link href="/dashboard/add-course" className="flex items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
-                      <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center mr-3">
-                        <FaPlus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Create New Course</span>
-                    </Link>
-                    <Link href="/dashboard/students" className="flex items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
-                      <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center mr-3">
-                        <FaUsers className="h-4 w-4 text-green-600 dark:text-green-400" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Manage Students</span>
-                    </Link>
-                    <Link href="/course-analytics" className="flex items-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">
-                      <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-800 flex items-center justify-center mr-3">
-                        <FaChartLine className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Course Analytics</span>
-                    </Link>
-                    <Link href="/dashboard/certifications" className="flex items-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors">
-                      <div className="w-8 h-8 rounded-full bg-yellow-100 dark:bg-yellow-800 flex items-center justify-center mr-3">
-                        <FaGraduationCap className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Manage Certifications</span>
-                    </Link>
-                    <Link href="/dashboard/teaching-materials" className="flex items-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
-                      <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-800 flex items-center justify-center mr-3">
-                        <FaBook className="h-4 w-4 text-red-600 dark:text-red-400" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Teaching Materials</span>
-                    </Link>
-                    <Link href="/dashboard/schedule" className="flex items-center p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors">
-                      <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-800 flex items-center justify-center mr-3">
-                        <FaCalendarAlt className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Teaching Schedule</span>
-                    </Link>
-                  </div>
-                </div>
+            {/* Students Tab */}
+            {activeTab === 'students' && (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Name</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Email</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Course</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Progress</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentStudents.map((student) => (
+                      <tr key={student.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <td className="py-4 px-4 font-medium text-gray-900 dark:text-white">{student.name}</td>
+                        <td className="py-4 px-4 text-gray-600 dark:text-gray-400 text-sm">{student.email}</td>
+                        <td className="py-4 px-4 text-gray-600 dark:text-gray-400 text-sm">{student.course}</td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-2 w-24">
+                              <div
+                                className="bg-blue-600 h-2 rounded-full"
+                                style={{ width: `${student.progress}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-medium text-gray-900 dark:text-white">{student.progress}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </aside>
+            )}
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FormateurDashboard
+export default FormateurDashboard;
+
+

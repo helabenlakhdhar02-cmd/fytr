@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../context/AuthContext';
 import Navbar from '../../../components/Navbar';
 import ClientDashboard from '../../../components/client/ClientDashboard';
-import { mockProjects, mockClients } from '../../../lib/mockData';
+import { API_BASE_URL } from '../../../config/api';
+import Cookies from 'js-cookie';
 
 const ClientDashboardPage = () => {
   const { isAuthenticated, user, loading } = useAuth();
@@ -13,28 +14,53 @@ const ClientDashboardPage = () => {
   const [clientData, setClientData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch client data
+  // Fetch client data from backend
   useEffect(() => {
-    // In a real app, this would fetch from an API
     const fetchClientData = async () => {
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        setIsLoading(true);
+        const accessToken = Cookies.get('access_token');
         
-        // For now, use mock data
-        // In a real app, you would fetch this from your API
-        const mockClient = mockClients.find(c => c.id === 1) || {
-          id: 1,
-          name: 'John Doe',
-          email: 'john@example.com',
-          company: 'Example Corp',
-          projects: mockProjects,
-          avatar: '/fighterfish.png'
-        };
-        
-        setClientData(mockClient);
+        // Fetch client profile data from backend
+        const response = await fetch(`${API_BASE_URL}/users/profile/`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setClientData({
+            id: data.id,
+            name: data.full_name,
+            email: data.email,
+            company: data.company || 'N/A',
+            avatar: data.profileImg || '/fighterfish.png',
+            projects: [], // Will be populated by ClientDashboard component
+          });
+        } else {
+          // Fallback if API fails
+          setClientData({
+            id: user?.id,
+            name: user?.full_name || 'Client',
+            email: user?.email || '',
+            company: 'N/A',
+            avatar: user?.profileImg || '/fighterfish.png',
+            projects: [],
+          });
+        }
       } catch (error) {
         console.error('Error fetching client data:', error);
+        // Fallback data
+        setClientData({
+          id: user?.id,
+          name: user?.full_name || 'Client',
+          email: user?.email || '',
+          company: 'N/A',
+          avatar: user?.profileImg || '/fighterfish.png',
+          projects: [],
+        });
       } finally {
         setIsLoading(false);
       }
@@ -44,11 +70,14 @@ const ClientDashboardPage = () => {
       if (!isAuthenticated) {
         // Redirect to login if not authenticated
         router.push('/login');
-      } else {
+      } else if (user?.role === 'client') {
         fetchClientData();
+      } else {
+        // Redirect if not a client
+        router.push('/dashboard/home');
       }
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, router, user]);
 
   // Show loading state
   if (loading || isLoading) {

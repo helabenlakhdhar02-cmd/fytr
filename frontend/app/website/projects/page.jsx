@@ -1368,7 +1368,7 @@ const ProjectsPage = () => {
         </section>
 
         {/* Project Trust & Quality Section */}
-        <section ref={trustRef} className="mb-24">
+        <section ref={trustRef} className="hidden mb-24">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Project Trust & Quality</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
