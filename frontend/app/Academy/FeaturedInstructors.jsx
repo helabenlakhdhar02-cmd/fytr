@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaStar, FaLinkedin, FaTwitter, FaGlobe, FaArrowRight } from "react-icons/fa";
-/*
+
 const instructors = [
   {
     name: "Dr. Sarah Johnson",
@@ -83,11 +83,10 @@ const FeaturedInstructors = () => {
     },
   };
 
-  // TODO: Uncomment when we have real instructor data
-  return null;
-};
+  return (
+    <section className="py-16 px-6 md:px-16 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto">
-        {/* Section Header *
+        {/* Section Header */}
         <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
@@ -106,7 +105,7 @@ const FeaturedInstructors = () => {
           </p>
         </motion.div>
 
-        {/* Instructors Grid *
+        {/* Instructors Grid */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
           variants={containerVariants}
@@ -124,7 +123,7 @@ const FeaturedInstructors = () => {
                 transition: { duration: 0.3, ease: "easeOut" }
               }}
             >
-              {/* Instructor Image - Shorter *
+              {/* Instructor Image - Shorter */}
               <div className="relative h-44 overflow-hidden">
                 <img
                   src={instructor.image}
@@ -137,13 +136,13 @@ const FeaturedInstructors = () => {
                 />
               </div>
 
-              {/* Instructor Info - Simplified *
+              {/* Instructor Info - Simplified */}
               <div className="p-5">
-                {/* Name and Role *
+                {/* Name and Role */}
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{instructor.name}</h3>
                 <p className="text-blue-600 dark:text-blue-400 font-medium text-sm mb-2">{instructor.role}</p>
 
-                {/* Rating *
+                {/* Rating */}
                 <div className="flex items-center mb-3">
                   <div className="flex text-yellow-400">
                     {[...Array(5)].map((_, i) => (
@@ -153,10 +152,10 @@ const FeaturedInstructors = () => {
                   <span className="text-gray-600 dark:text-gray-400 text-sm ml-2">{instructor.rating}</span>
                 </div>
 
-                {/* Bio *
+                {/* Bio */}
                 <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">{instructor.bio}</p>
 
-                {/* Stats *
+                {/* Stats */}
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-4">
                   <div>
                     <span className="font-semibold text-gray-900 dark:text-white">{instructor.students.toLocaleString()}</span> students
@@ -166,7 +165,7 @@ const FeaturedInstructors = () => {
                   </div>
                 </div>
 
-                {/* Social Links and View Profile *
+                {/* Social Links and View Profile */}
                 <div className="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-gray-700">
                   <div className="flex space-x-3">
                     <a href={instructor.social.linkedin} className="text-gray-400 hover:text-blue-500 transition-colors">
@@ -193,7 +192,7 @@ const FeaturedInstructors = () => {
           ))}
         </motion.div>
 
-        {/* View All Button *
+        {/* View All Button */}
         <motion.div
           className="mt-12 text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -216,4 +215,4 @@ const FeaturedInstructors = () => {
   );
 };
 
-export default FeaturedInstructors; */
+export default FeaturedInstructors;

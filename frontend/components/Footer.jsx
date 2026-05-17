@@ -94,10 +94,7 @@ const Footer = () => {
               <FaEnvelope className="text-primary-600 dark:text-primary-500 mr-2" />
               <a href="mailto:support@fytrlance.com" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">support@fytrlance.com</a>
             </div>
-            <div className="flex items-center bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-              <FaPhone className="text-primary-600 dark:text-primary-500 mr-2" />
-              <a href="tel:+216 52 179 854" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">+216 52 179 854</a>
-            </div>
+           
             
           </div>
         </div>

@@ -333,13 +333,14 @@ const ClientDashboard = ({ client }) => {
               Find Freelancers
             </Link>
 
-            <Link
+            {/* Analytics button hidden */}
+            {/* <Link
               href="/clante/analytics"
               className="flex items-center bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium"
             >
               <FaChartLine className="mr-2" size={14} />
               Analytics
-            </Link>
+            </Link> */}
           </div>
         </div>
 

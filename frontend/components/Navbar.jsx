@@ -280,8 +280,8 @@ function NavbarComponent() {
           {/* User Actions */}
           {isAuthenticated && user ? (
             <div className="flex items-center gap-4">
-              {/* Notifications Center */}
-              <NotificationCenter isInstructor={user?.role === 'formateur'} />
+              {/* Notifications Center - Hidden */}
+              {/* <NotificationCenter isInstructor={user?.role === 'formateur'} /> */}
 
               {/* Messages Dropdown */}
               <div className="relative inline-block text-left">

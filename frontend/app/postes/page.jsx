@@ -184,7 +184,7 @@ const page = () => {
           <TrendingTopics />
 
           {/* Suggested Users (Top Freelancers) */}
-          <SuggestedUsers />
+          <div className="hidden"><SuggestedUsers /></div>
 
           {/* Community Guidelines - Last element */}
           <motion.div

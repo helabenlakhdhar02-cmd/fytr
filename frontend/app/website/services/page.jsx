@@ -1021,7 +1021,7 @@ const Page = () => {
         </section>
 
         {/* Featured Services Section */}
-        <section className="py-16 px-6 md:px-16 bg-white dark:bg-gray-800">
+        <section className="hidden py-16 px-6 md:px-16 bg-white dark:bg-gray-800">
           <div className="container mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-center mb-10">
               <div>

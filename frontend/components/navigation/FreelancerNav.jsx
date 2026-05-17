@@ -1,6 +1,6 @@
 'use client';
 
-import { FaHome, FaGraduationCap, FaLayerGroup, FaHistory } from 'react-icons/fa';
+import { FaHome, FaLayerGroup, FaHistory } from 'react-icons/fa';
 import Link from 'next/link';
 
 export default function FreelancerNav({ userRank = 'Bronze' }) {
@@ -11,10 +11,6 @@ export default function FreelancerNav({ userRank = 'Bronze' }) {
     <div className="hidden md:flex items-center justify-center w-full">
       {/* Left Side Links */}
       <div className="flex items-center space-x-8 lg:space-x-10 mr-12">
-        <Link href="/academy" className={linkStyle}>
-          <FaGraduationCap className="text-primary-600" /> <span>Academy</span>
-        </Link>
-
         <Link href="/clabte-freelancer" className={linkStyle}>
           <FaLayerGroup className="text-primary-600" /> <span>Workspace</span>
         </Link>
